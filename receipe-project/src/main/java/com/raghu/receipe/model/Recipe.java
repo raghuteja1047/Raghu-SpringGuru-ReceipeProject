@@ -10,12 +10,17 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import lombok.EqualsAndHashCode;
+
 @Entity
+@EqualsAndHashCode
 public class Recipe {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,23 +31,25 @@ public class Recipe {
 	private Integer servings;
 	private String source;
 	private String url;
+	@Lob
 	private String directions;
 
 	@Lob
 	private Byte[] image;
-	
+
 	@Enumerated(EnumType.STRING)
 	private Difficulty difficulty;
-	
+
 	@OneToOne(cascade = CascadeType.ALL)
 	private Notes note;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
 	private Set<Ingredient> ingredients = new HashSet<Ingredient>();
 
 	@ManyToMany
-	private Set<Category> categories;
-	
+	@JoinTable(name = "RECIPE_CATEGORY", joinColumns = @JoinColumn(name = "recipe_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
+	private Set<Category> categories = new HashSet<Category>();
+
 	public Long getId() {
 		return id;
 	}
@@ -87,6 +94,30 @@ public class Recipe {
 		return source;
 	}
 
+	public Byte[] getImage() {
+		return image;
+	}
+
+	public void setImage(Byte[] image) {
+		this.image = image;
+	}
+
+	public Difficulty getDifficulty() {
+		return difficulty;
+	}
+
+	public void setDifficulty(Difficulty difficulty) {
+		this.difficulty = difficulty;
+	}
+
+	public Set<Category> getCategories() {
+		return categories;
+	}
+
+	public void setCategories(Set<Category> categories) {
+		this.categories = categories;
+	}
+
 	public void setSource(String source) {
 		this.source = source;
 	}
@@ -112,6 +143,7 @@ public class Recipe {
 	}
 
 	public void setNote(Notes note) {
+		note.setRecipe(this);
 		this.note = note;
 	}
 
@@ -123,4 +155,9 @@ public class Recipe {
 		this.ingredients = ingredients;
 	}
 
+	public Recipe addIngredient(Ingredient ingredient) {
+		ingredient.setRecipe(this);
+		this.ingredients.add(ingredient);
+		return this;
+	}
 }

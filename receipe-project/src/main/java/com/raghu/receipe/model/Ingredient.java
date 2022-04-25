@@ -21,10 +21,21 @@ public class Ingredient {
 
 	@ManyToOne
 	private Recipe recipe;
-	
-	@OneToOne(fetch = FetchType.EAGER )
+
+	@OneToOne(fetch = FetchType.EAGER)
 	private UnitOfMeasure uom;
-	
+
+	public Ingredient() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Ingredient(String description, BigDecimal amount, UnitOfMeasure uom) {
+		super();
+		this.description = description;
+		this.amount = amount;
+		this.uom = uom;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -65,5 +76,4 @@ public class Ingredient {
 		this.uom = uom;
 	}
 
-	
 }
